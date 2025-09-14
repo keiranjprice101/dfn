@@ -76,11 +76,11 @@ def send_discord_message(file_path: str) -> None:
         file_path: absolute path of the file that triggered the event.
     """
     file_name = os.path.basename(file_path)
-    url = "http://192.168.5.22:8080/files/hdd2/Octocrate" + file_path.replace("/data", "")
+    url = ("http://192.168.5.22:8080/files/hdd2/Octocrate" + file_path.replace("/data", "")).replace(" ", "%20")
     # Compose the message.  Keep it simple: the `content` field is
     # sufficient for a basic message【728709583288637†L42-L47】.
     payload = {
-        "content": f"🆕 file detected: <{url.replace(" ", "%20")}> in monitored directory."
+        "content": f"🆕 file detected: <{url}> in monitored directory."
     }
     while True:
         try:
