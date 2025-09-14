@@ -14,7 +14,7 @@ services:
     # Build the image from the local Dockerfile.  Alternatively you can
     # replace ``build: .`` with ``image: ghcr.io/OWNER/REPO:latest`` after
     # pushing the image to GitHub Container Registry.
-    build: .
+    build: ghcr.io/keiranprice/dfn:latest
     container_name: dir-watcher
     environment:
       # Pass the webhook URL into the container.  Do not hard‑code this
