@@ -80,7 +80,7 @@ def send_discord_message(file_path: str) -> None:
     # Compose the message.  Keep it simple: the `content` field is
     # sufficient for a basic message【728709583288637†L42-L47】.
     payload = {
-        "content": f"🆕 New file detected: `{url}` in monitored directory."
+        "content": f"🆕 New file detected: {url} in monitored directory."
     }
     while True:
         try:
