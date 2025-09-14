@@ -1,0 +1,57 @@
+name: Build and push Docker image
+
+# This workflow builds the Docker image defined in the repository and pushes it
+# to GitHub Container Registry (GHCR) whenever changes are pushed to the main
+# branch or when manually triggered.  GHCR uses the same namespace as your
+# repository, so if your repo is ``github.com/OWNER/REPO`` then the image will
+# be published as ``ghcr.io/OWNER/REPO``.  The workflow uses the
+# ``GITHUB_TOKEN`` for authentication to GHCR; GitHub automatically
+# provisions this token with write permissions to packages when the workflow
+# includes the appropriate ``packages: write`` permission.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Docker Buildx.  Buildx provides improved build features
+      # such as multi‑platform builds and caching.
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Authenticate to GitHub Container Registry using the automatically
+      # generated GITHUB_TOKEN.  This login step is required for the
+      # subsequent push to succeed.
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build the Docker image defined in the ``Dockerfile`` at the root of
+      # this repository.  Two tags are pushed: ``latest`` and a tag based on
+      # the current commit SHA.  Tagging images with the commit SHA helps
+      # identify exactly which commit produced a given image.
+      - name: Build and push container image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.sha }}

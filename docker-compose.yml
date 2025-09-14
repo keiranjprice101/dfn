@@ -1,0 +1,33 @@
+version: "3.8"
+
+# Docker Compose configuration to run the directory watcher locally.  This file
+# builds the Docker image defined in the repository and starts a container
+# which monitors a directory on the host and posts notifications to a Discord
+# webhook whenever new files appear.  To use this compose file you must
+# provide the ``DISCORD_WEBHOOK_URL`` environment variable (e.g. in a
+# ``.env`` file) and adjust the volume mount under ``volumes`` to point to
+# the host directory you want to watch.  The monitored directory inside the
+# container is ``/data``.
+
+services:
+  dir-watcher:
+    # Build the image from the local Dockerfile.  Alternatively you can
+    # replace ``build: .`` with ``image: ghcr.io/OWNER/REPO:latest`` after
+    # pushing the image to GitHub Container Registry.
+    build: .
+    container_name: dir-watcher
+    environment:
+      # Pass the webhook URL into the container.  Do not hard‑code this
+      # secret directly in the compose file; supply it via an environment
+      # file or shell environment.  For example create a ``.env`` file with
+      # ``DISCORD_WEBHOOK_URL=...`` and Docker Compose will automatically
+      # populate it.
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
+      # Tell the script to watch the ``/data`` directory inside the container
+      - WATCH_DIRECTORY=/data
+    volumes:
+      # Mount a host directory to /data in the container.  Replace
+      # ``/path/to/host/dir`` with the absolute path you want to monitor.  The
+      # ``ro`` option mounts it read‑only; if you need write access remove ``:ro``.
+      - /path/to/host/dir:/data:ro
+    restart: unless-stopped
