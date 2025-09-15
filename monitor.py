@@ -142,7 +142,7 @@ def main() -> None:
     event_queue: Queue = Queue()
     handler = NewFileHandler(event_queue)
     observer = Observer()
-    observer.schedule(handler, MONITOR_DIR, recursive=False)
+    observer.schedule(handler, MONITOR_DIR, recursive=True)
     observer.start()
     logging.info("Watching directory: %s", MONITOR_DIR)
     # Launch a worker thread to process queued events
